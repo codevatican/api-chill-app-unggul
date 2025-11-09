@@ -1,0 +1,26 @@
+{
+  "name": "api-chill-app",
+  "version": "1.0.0",
+  "description": "api untuk chill app express js",
+  "keywords": [
+    "api",
+    "express",
+    "js",
+    "chill"
+  ],
+  "license": "ISC",
+  "author": "unggul sulaiman",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon index.js",
+    "prod": ""
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "mongoose": "^8.19.3",
+    "nodemon": "^3.1.10"
+  }
+}
