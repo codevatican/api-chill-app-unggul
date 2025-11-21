@@ -18,7 +18,7 @@ const checkToken = async(req, res, next) => {
         next();
     }catch (error) {
         console.error('checkToken Error:', error);
-        return ERR(res, 500, 'Internal Server Error (checkToken)');
+        return ERR(res, 500, 'Unauthorized: Invalid token');
     }
 }
 

@@ -1,5 +1,6 @@
 const {ERR, OK} = require('../utils/response');
 const { User } = require('../models/index.model');
+const argon2 = require('argon2');
 
 const GetFavoriteMovies = async (req, res) => {
     return OK(res, 200, req.user, 'Favorite movies retrieved successfully');
@@ -37,15 +38,34 @@ const RemoveFavoriteMovie = async (req, res) => {
     }
 }
 
+const CheckFavoriteMovie = async (req, res) => {
+    try{
+        const {movieID} = req.body;
+        const user = await User.findById(req.user._id);
+        const isFavorite = await user.favoriteMovies.some(movie => movie.id === movieID);
+        return OK(res, 200, {isFavorite}, 'Check favorite movie successful');
+    } catch (error) {
+        return ERR(res, 500, 'Internal Server Error (CheckFavoriteMovie)');
+    }
+}
+
 const SignInToken = async (req, res) => {
     try {
-        const {email, token} = req.body;
+        const {email, password, token} = req.body;
         let user = await User.findOne({ email });
-        if(user){
-            user.token = token;
-        }else{
-            user = new User({email, token});
+        
+        if(!user){
+            return ERR(res, 400, 'User not found');
         }
+
+        const isPasswordValid = await argon2.verify(user.password, password);
+
+        if(!isPasswordValid){
+            return ERR(res, 400, 'Invalid password');
+        }
+
+        user.token = token;
+
         await user.save();
         
         return OK(res, 200, null, 'Token is valid');
@@ -61,10 +81,32 @@ const SignOutToken = async (req, res) => {
     return OK(res, 204, null, 'Sign out successful');
 }
 
+const SignUpUser = async (req, res) => {
+    const {email, password} = req.body;
+    const hashPass = await argon2.hash(password);
+
+    try{
+        const user = await User.findOne({ email });
+
+        if(user){
+            return ERR(res, 400, 'User already exists');
+        }
+
+        const addNewUser = new User({email, password: hashPass});
+        await addNewUser.save();
+        return OK(res, 201, addNewUser, 'User created successfully');
+
+    } catch(error) {
+        return ERR(res, 500, 'Internal Server Error (SignUpUser)');
+    }
+}
+
 module.exports = {
     SignInToken,
     SignOutToken,
+    SignUpUser,
     GetFavoriteMovies,
     AddFavoriteMovie,
-    RemoveFavoriteMovie
+    RemoveFavoriteMovie,
+    CheckFavoriteMovie
 }

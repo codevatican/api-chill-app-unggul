@@ -1,0 +1,68 @@
+openapi: 3.1.0
+info:
+  version: 1.0.0
+  title: API Chill App
+  description: API documentation for the API Chill App.
+paths:
+  /my-movies/{email}/{token}:
+    get:
+      summary: Get all movies
+      parameters:
+        - name: email
+          in: path
+          required: true
+          schema:
+            type: string
+          description: User's email address
+        - name: token
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Authentication token
+      responses:
+        "200":
+          description: A list of movies
+        "401":
+          description: Unauthorized
+  /my-movies:
+    post:
+      summary: Add a new movie
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: "testing2@gmail.com"
+                  description: User's email address
+                token:
+                  type: string
+                  example: "token321654"
+                  description: Authentication token
+                data:
+                  type: object
+                  description: Movie details
+                  properties:
+                    id:
+                      type: integer
+                      example: 550
+                      description: Movie ID
+                    title:
+                      type: string
+                      example: "The Shawshank Redemption"
+                      description: Movie title
+                    description:
+                      type: string
+                      example: "Two imprisoned men bond over a number of years..."
+                      description: Movie description
+      responses:
+        "201":
+          description: Movie added successfully
+        "400":
+          description: Bad request
+        "401":
+          description: Unauthorized
